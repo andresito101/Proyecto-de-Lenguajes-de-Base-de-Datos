@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cliente - Habitaciones</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
+</head>
+<body>
+    <!-- Barra de navegación -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">Hotel Buena Vista</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="index.html">Inicio</a></li>
+                    <li class="nav-item"><a class="nav-link" href="gestion-clientes.html">Gestión de Clientes</a></li>
+                    <li class="nav-item"><a class="nav-link" href="checkin-checkout.html">Check-In/Check-Out</a></li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="reservacionesDropdown" role="button" data-bs-toggle="dropdown">Reservaciones</a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="reservaciones.html">Reservaciones</a></li>
+                            <li><a class="dropdown-item" href="reservaciones_cliente.html">Reservaciones Cliente</a></li>
+                            <li><a class="dropdown-item" href="reservaciones_restaurantes.html">Reservaciones Restaurantes</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item"><a class="nav-link" href="pagos.html">Pagos</a></li>
+                    <li class="nav-item"><a class="nav-link" href="retroalimentacion.html">Retroalimentación</a></li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="gestionServiciosDropdown" role="button" data-bs-toggle="dropdown">Gestión de Servicios</a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="gestion-servicios.html">Gestión de Servicios</a></li>
+                            <li><a class="dropdown-item" href="registro_servicio.html">Registro Servicio</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="habitacionesDropdown" role="button" data-bs-toggle="dropdown">Habitaciones</a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="cliente_habitacion.html">Cliente Habitación</a></li>
+                            <li><a class="dropdown-item" href="habitaciones.html">Habitaciones</a></li>
+                            <li><a class="dropdown-item" href="hotel.html">Hotel</a></li>
+                            <li><a class="dropdown-item" href="registro_estancia.html">Registro Estancia</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="otrosDropdown" role="button" data-bs-toggle="dropdown">Otros</a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="opinion_clientes.html">Opinión Clientes</a></li>
+                            <li><a class="dropdown-item" href="pedidos.html">Pedidos</a></li>
+                            <li><a class="dropdown-item" href="pedidos_suministros.html">Pedidos Suministros</a></li>
+                            <li><a class="dropdown-item" href="restaurantes.html">Restaurantes</a></li>
+                            <li><a class="dropdown-item" href="servicio_hotel.html">Servicio Hotel</a></li>
+                            <li><a class="dropdown-item" href="suministros.html">Suministros</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Contenido principal -->
+    <div class="container mt-4">
+        <h1>Gestión de Clientes y Habitaciones</h1>
+
+        <!-- Formulario para agregar/editar la asignación de habitación -->
+        <form id="formClienteHabitacion" method="POST">
+            <div class="row">
+                <input type="hidden" name="accion" id="accion" value="crear">
+                <input type="hidden" name="ID_Cliente" id="ID_Cliente">
+
+                <div class="col-md-6">
+                    <label for="ID_Cliente" class="form-label">Cliente</label>
+                    <select name="ID_Cliente" id="ID_Cliente" class="form-select" required>
+                        <option value="">Seleccionar Cliente</option>
+                        <option value="1">Juan Pérez</option>
+                        <option value="2">Ana García</option>
+                        <option value="3">Carlos López</option>
+                    </select>
+                </div>
+
+                <div class="col-md-6 mt-2">
+                    <label for="Num_Habitacion" class="form-label">Número de Habitación</label>
+                    <select name="Num_Habitacion" id="Num_Habitacion" class="form-select" required>
+                        <option value="">Seleccionar Habitación</option>
+                        <option value="101">101 - Individual</option>
+                        <option value="102">102 - Doble</option>
+                        <option value="103">103 - Suite</option>
+                    </select>
+                </div>
+
+                <div class="col-md-6 mt-2">
+                    <label for="Fecha_Entrada" class="form-label">Fecha de Entrada</label>
+                    <input type="date" class="form-control" name="Fecha_Entrada" id="Fecha_Entrada" required>
+                </div>
+
+                <div class="col-md-6 mt-2">
+                    <label for="Fecha_Salida" class="form-label">Fecha de Salida</label>
+                    <input type="date" class="form-control" name="Fecha_Salida" id="Fecha_Salida" required>
+                </div>
+
+                <div class="col-md-12 mt-4">
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                </div>
+            </div>
+        </form>
+
+        <!-- Tabla para listar cliente - habitación -->
+        <table class="table table-striped mt-4">
+            <thead>
+                <tr>
+                    <th>ID Cliente</th>
+                    <th>Nombre del Cliente</th>
+                    <th>Habitación</th>
+                    <th>Fecha de Entrada</th>
+                    <th>Fecha de Salida</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>1</td>
+                    <td>Juan Pérez</td>
+                    <td>101 - Individual</td>
+                    <td>2024-11-21</td>
+                    <td>2024-11-25</td>
+                    <td>
+                        <button class="btn btn-warning btn-sm" onclick="editarClienteHabitacion({
+                            ID_Cliente: '1',
+                            Num_Habitacion: '101',
+                            Fecha_Entrada: '2024-11-21',
+                            Fecha_Salida: '2024-11-25'
+                        })">Editar</button>
+                        <button class="btn btn-danger btn-sm">Eliminar</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>Ana García</td>
+                    <td>102 - Doble</td>
+                    <td>2024-11-20</td>
+                    <td>2024-11-23</td>
+                    <td>
+                        <button class="btn btn-warning btn-sm" onclick="editarClienteHabitacion({
+                            ID_Cliente: '2',
+                            Num_Habitacion: '102',
+                            Fecha_Entrada: '2024-11-20',
+                            Fecha_Salida: '2024-11-23'
+                        })">Editar</button>
+                        <button class="btn btn-danger btn-sm">Eliminar</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        function editarClienteHabitacion(clienteHabitacion) {
+            document.getElementById('accion').value = 'editar';
+            document.getElementById('ID_Cliente').value = clienteHabitacion.ID_Cliente;
+            document.getElementById('Num_Habitacion').value = clienteHabitacion.Num_Habitacion;
+            document.getElementById('Fecha_Entrada').value = clienteHabitacion.Fecha_Entrada;
+            document.getElementById('Fecha_Salida').value = clienteHabitacion.Fecha_Salida;
+        }
+    </script>
+
+    <!-- Scripts de Bootstrap -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

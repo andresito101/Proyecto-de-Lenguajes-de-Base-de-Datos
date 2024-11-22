@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Clientes</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
+</head>
+<body>
+    <!-- Barra de navegación -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">Hotel Buena Vista</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="index.html">Inicio</a></li>
+                    <li class="nav-item"><a class="nav-link" href="gestion-clientes.html">Gestión de Clientes</a></li>
+                    <li class="nav-item"><a class="nav-link" href="checkin-checkout.html">Check-In/Check-Out</a></li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="reservacionesDropdown" role="button" data-bs-toggle="dropdown">Reservaciones</a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="reservaciones.html">Reservaciones</a></li>
+                            <li><a class="dropdown-item" href="reservaciones_cliente.html">Reservaciones Cliente</a></li>
+                            <li><a class="dropdown-item" href="reservaciones_restaurantes.html">Reservaciones Restaurantes</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item"><a class="nav-link" href="pagos.html">Pagos</a></li>
+                    <li class="nav-item"><a class="nav-link" href="retroalimentacion.html">Retroalimentación</a></li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="gestionServiciosDropdown" role="button" data-bs-toggle="dropdown">Gestión de Servicios</a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="gestion-servicios.html">Gestión de Servicios</a></li>
+                            <li><a class="dropdown-item" href="registro_servicio.html">Registro Servicio</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="habitacionesDropdown" role="button" data-bs-toggle="dropdown">Habitaciones</a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="cliente_habitacion.html">Cliente Habitación</a></li>
+                            <li><a class="dropdown-item" href="habitaciones.html">Habitaciones</a></li>
+                            <li><a class="dropdown-item" href="hotel.html">Hotel</a></li>
+                            <li><a class="dropdown-item" href="registro_estancia.html">Registro Estancia</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="otrosDropdown" role="button" data-bs-toggle="dropdown">Otros</a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="opinion_clientes.html">Opinión Clientes</a></li>
+                            <li><a class="dropdown-item" href="pedidos.html">Pedidos</a></li>
+                            <li><a class="dropdown-item" href="pedidos_suministros.html">Pedidos Suministros</a></li>
+                            <li><a class="dropdown-item" href="restaurantes.html">Restaurantes</a></li>
+                            <li><a class="dropdown-item" href="servicio_hotel.html">Servicio Hotel</a></li>
+                            <li><a class="dropdown-item" href="suministros.html">Suministros</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <h1>Gestión de Clientes</h1>
+
+        <!-- Formulario para agregar/editar un cliente -->
+        <form id="formClientes" method="POST">
+            <div class="row">
+                <input type="hidden" name="accion" id="accion" value="crear">
+                <input type="hidden" name="ID_Cliente" id="ID_Cliente">
+
+                <div class="col-md-4">
+                    <label for="Nombre" class="form-label">Nombre</label>
+                    <input type="text" class="form-control" name="Nombre" id="Nombre" required>
+                </div>
+
+                <div class="col-md-4">
+                    <label for="Apellido1" class="form-label">Primer Apellido</label>
+                    <input type="text" class="form-control" name="Apellido1" id="Apellido1" required>
+                </div>
+
+                <div class="col-md-4">
+                    <label for="Apellido2" class="form-label">Segundo Apellido</label>
+                    <input type="text" class="form-control" name="Apellido2" id="Apellido2">
+                </div>
+
+                <div class="col-md-4 mt-2">
+                    <label for="Pais" class="form-label">País</label>
+                    <input type="text" class="form-control" name="Pais" id="Pais" required>
+                </div>
+
+                <div class="col-md-4 mt-2">
+                    <label for="Telefono" class="form-label">Teléfono</label>
+                    <input type="text" class="form-control" name="Telefono" id="Telefono" required>
+                </div>
+
+                <div class="col-md-4 mt-2">
+                    <label for="Ciudad" class="form-label">Ciudad</label>
+                    <input type="text" class="form-control" name="Ciudad" id="Ciudad" required>
+                </div>
+
+                <div class="col-md-12 mt-4">
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                </div>
+            </div>
+        </form>
+
+        <!-- Tabla para listar clientes -->
+        <table class="table table-striped mt-4">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Primer Apellido</th>
+                    <th>Segundo Apellido</th>
+                    <th>País</th>
+                    <th>Teléfono</th>
+                    <th>Ciudad</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>1</td>
+                    <td>Juan Pérez</td>
+                    <td>Pérez</td>
+                    <td>García</td>
+                    <td>México</td>
+                    <td>5551234567</td>
+                    <td>Ciudad de México</td>
+                    <td>
+                        <button class="btn btn-warning btn-sm" onclick="editarCliente({
+                            ID_Cliente: '1',
+                            Nombre: 'Juan',
+                            Apellido1: 'Pérez',
+                            Apellido2: 'García',
+                            Pais: 'México',
+                            Telefono: '5551234567',
+                            Ciudad: 'Ciudad de México'
+                        })">Editar</button>
+                        <button class="btn btn-danger btn-sm">Eliminar</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>Ana López</td>
+                    <td>López</td>
+                    <td>Martínez</td>
+                    <td>España</td>
+                    <td>3456789012</td>
+                    <td>Madrid</td>
+                    <td>
+                        <button class="btn btn-warning btn-sm" onclick="editarCliente({
+                            ID_Cliente: '2',
+                            Nombre: 'Ana',
+                            Apellido1: 'López',
+                            Apellido2: 'Martínez',
+                            Pais: 'España',
+                            Telefono: '3456789012',
+                            Ciudad: 'Madrid'
+                        })">Editar</button>
+                        <button class="btn btn-danger btn-sm">Eliminar</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        function editarCliente(cliente) {
+            document.getElementById('accion').value = 'editar';
+            document.getElementById('ID_Cliente').value = cliente.ID_Cliente;
+            document.getElementById('Nombre').value = cliente.Nombre;
+            document.getElementById('Apellido1').value = cliente.Apellido1;
+            document.getElementById('Apellido2').value = cliente.Apellido2;
+            document.getElementById('Pais').value = cliente.Pais;
+            document.getElementById('Telefono').value = cliente.Telefono;
+            document.getElementById('Ciudad').value = cliente.Ciudad;
+        }
+    </script>
+</body>
+</html>

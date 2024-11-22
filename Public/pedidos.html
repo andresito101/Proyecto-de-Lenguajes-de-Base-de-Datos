@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Pedidos</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
+</head>
+<body>
+    <!-- Barra de navegación -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">Hotel Buena Vista</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="index.html">Inicio</a></li>
+                    <li class="nav-item"><a class="nav-link" href="gestion-clientes.html">Gestión de Clientes</a></li>
+                    <li class="nav-item"><a class="nav-link" href="checkin-checkout.html">Check-In/Check-Out</a></li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="reservacionesDropdown" role="button" data-bs-toggle="dropdown">Reservaciones</a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="reservaciones.html">Reservaciones</a></li>
+                            <li><a class="dropdown-item" href="reservaciones_cliente.html">Reservaciones Cliente</a></li>
+                            <li><a class="dropdown-item" href="reservaciones_restaurantes.html">Reservaciones Restaurantes</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item"><a class="nav-link" href="pagos.html">Pagos</a></li>
+                    <li class="nav-item"><a class="nav-link" href="retroalimentacion.html">Retroalimentación</a></li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="gestionServiciosDropdown" role="button" data-bs-toggle="dropdown">Gestión de Servicios</a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="gestion-servicios.html">Gestión de Servicios</a></li>
+                            <li><a class="dropdown-item" href="registro_servicio.html">Registro Servicio</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="habitacionesDropdown" role="button" data-bs-toggle="dropdown">Habitaciones</a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="cliente_habitacion.html">Cliente Habitación</a></li>
+                            <li><a class="dropdown-item" href="habitaciones.html">Habitaciones</a></li>
+                            <li><a class="dropdown-item" href="hotel.html">Hotel</a></li>
+                            <li><a class="dropdown-item" href="registro_estancia.html">Registro Estancia</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="otrosDropdown" role="button" data-bs-toggle="dropdown">Otros</a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="opinion_clientes.html">Opinión Clientes</a></li>
+                            <li><a class="dropdown-item" href="pedidos.html">Pedidos</a></li>
+                            <li><a class="dropdown-item" href="pedidos_suministros.html">Pedidos Suministros</a></li>
+                            <li><a class="dropdown-item" href="restaurantes.html">Restaurantes</a></li>
+                            <li><a class="dropdown-item" href="servicio_hotel.html">Servicio Hotel</a></li>
+                            <li><a class="dropdown-item" href="suministros.html">Suministros</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div class="container mt-4">
+        <h1>Gestión de Pedidos</h1>
+
+        <!-- Formulario para agregar/editar pedido -->
+        <form id="formPedido" method="POST">
+            <div class="row">
+                <input type="hidden" name="accion" id="accion" value="crear">
+                <input type="hidden" name="ID_Pedido" id="ID_Pedido">
+
+                <div class="col-md-6">
+                    <label for="ID_Hotel" class="form-label">Hotel</label>
+                    <select name="ID_Hotel" id="ID_Hotel" class="form-select" required>
+                        <option value="">Seleccionar Hotel</option>
+                        <option value="1">Hotel 1</option>
+                        <option value="2">Hotel 2</option>
+                    </select>
+                </div>
+
+                <div class="col-md-6 mt-2">
+                    <label for="ID_Suministro" class="form-label">Suministro</label>
+                    <select name="ID_Suministro" id="ID_Suministro" class="form-select" required>
+                        <option value="">Seleccionar Suministro</option>
+                        <option value="1">Suministro 1</option>
+                        <option value="2">Suministro 2</option>
+                    </select>
+                </div>
+
+                <div class="col-md-6 mt-2">
+                    <label for="Cantidad" class="form-label">Cantidad</label>
+                    <input type="number" class="form-control" name="Cantidad" id="Cantidad" required>
+                </div>
+
+                <div class="col-md-6 mt-2">
+                    <label for="Fecha_Pedido" class="form-label">Fecha de Pedido</label>
+                    <input type="date" class="form-control" name="Fecha_Pedido" id="Fecha_Pedido" required>
+                </div>
+
+                <div class="col-md-12 mt-4">
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                </div>
+            </div>
+        </form>
+
+        <!-- Tabla para listar los pedidos -->
+        <table class="table table-striped mt-4">
+            <thead>
+                <tr>
+                    <th>ID Pedido</th>
+                    <th>Hotel</th>
+                    <th>Suministro</th>
+                    <th>Cantidad</th>
+                    <th>Fecha de Pedido</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Aquí se simulan algunos datos estáticos -->
+                <tr>
+                    <td>1</td>
+                    <td>Hotel 1</td>
+                    <td>Suministro 1</td>
+                    <td>50</td>
+                    <td>2024-11-21</td>
+                    <td>
+                        <button class="btn btn-warning btn-sm" onclick="editarPedido({
+                            ID_Pedido: '1',
+                            ID_Hotel: '1',
+                            ID_Suministro: '1',
+                            Cantidad: '50',
+                            Fecha_Pedido: '2024-11-21'
+                        })">Editar</button>
+                        <button class="btn btn-danger btn-sm" onclick="eliminarPedido(1)">Eliminar</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>Hotel 2</td>
+                    <td>Suministro 2</td>
+                    <td>30</td>
+                    <td>2024-11-20</td>
+                    <td>
+                        <button class="btn btn-warning btn-sm" onclick="editarPedido({
+                            ID_Pedido: '2',
+                            ID_Hotel: '2',
+                            ID_Suministro: '2',
+                            Cantidad: '30',
+                            Fecha_Pedido: '2024-11-20'
+                        })">Editar</button>
+                        <button class="btn btn-danger btn-sm" onclick="eliminarPedido(2)">Eliminar</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        function editarPedido(pedido) {
+            document.getElementById('accion').value = 'editar';
+            document.getElementById('ID_Pedido').value = pedido.ID_Pedido;
+            document.getElementById('ID_Hotel').value = pedido.ID_Hotel;
+            document.getElementById('ID_Suministro').value = pedido.ID_Suministro;
+            document.getElementById('Cantidad').value = pedido.Cantidad;
+            document.getElementById('Fecha_Pedido').value = pedido.Fecha_Pedido;
+        }
+
+        function eliminarPedido(idPedido) {
+            if (confirm(`¿Estás seguro de que quieres eliminar el pedido ${idPedido}?`)) {
+                // Aquí puedes agregar lógica para eliminar el pedido
+                alert(`Pedido ${idPedido} eliminado.`);
+            }
+        }
+    </script>
+</body>
+</html>
