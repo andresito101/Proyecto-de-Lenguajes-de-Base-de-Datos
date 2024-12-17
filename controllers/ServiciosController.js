@@ -1,5 +1,5 @@
 const oracledb = require('oracledb');
-const serviciosModel = require('../models/servicios');
+const servicios = require('../models/servicios');
 
 
 

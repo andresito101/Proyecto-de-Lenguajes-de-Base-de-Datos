@@ -1,6 +1,5 @@
 const oracledb = require('oracledb');
-const reservacionesModel = require('../models/reservaciones');
-
+const reservaciones = require('../models/reservaciones');
 
 
 async function obtenerReservaciones(req, res) {

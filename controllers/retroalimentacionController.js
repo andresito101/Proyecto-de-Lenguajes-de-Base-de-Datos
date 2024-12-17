@@ -1,5 +1,5 @@
 const oracledb = require('oracledb');
-const retroalimentacionModel = require('../models/retroalimentacion');
+const retroalimentacion = require('../models/retroalimentacion');
 
 
 
