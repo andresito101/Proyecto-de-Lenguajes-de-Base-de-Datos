@@ -1,0 +1,276 @@
+SET SERVEROUTPUT ON;
+
+-- 1. Cursor para listar clientes
+DECLARE
+    CURSOR c_clientes IS
+        SELECT cliente_id, nombre, correo, telefono FROM Cliente;
+BEGIN
+    OPEN c_clientes;
+    LOOP
+        FETCH c_clientes INTO v_cliente_id, v_nombre, v_correo, v_telefono;
+        EXIT WHEN c_clientes%NOTFOUND;
+        -- Procesar datos del cliente
+    END LOOP;
+    CLOSE c_clientes;
+END;
+/
+
+-- 2. Cursor para reservas activas por cliente
+DECLARE
+    CURSOR c_reservas_activas IS
+        SELECT r.reservacion_id, c.nombre, r.fecha_inicio, r.fecha_fin
+        FROM Reservacion r
+        JOIN Cliente c ON r.cliente_id = c.cliente_id
+        WHERE r.fecha_fin >= SYSDATE;
+BEGIN
+    OPEN c_reservas_activas;
+    LOOP
+        FETCH c_reservas_activas INTO v_reservacion_id, v_cliente_nombre, v_fecha_inicio, v_fecha_fin;
+        EXIT WHEN c_reservas_activas%NOTFOUND;
+        -- Procesar datos de la reservación activa
+    END LOOP;
+    CLOSE c_reservas_activas;
+END;
+/
+
+-- 3. Cursor para habitaciones disponibles en un hotel
+DECLARE
+    CURSOR c_habitaciones_disponibles IS
+        SELECT habitacion_id, numero, tipo, precio_por_noche
+        FROM Habitacion
+        WHERE estado = 'Disponible';
+BEGIN
+    OPEN c_habitaciones_disponibles;
+    LOOP
+        FETCH c_habitaciones_disponibles INTO v_habitacion_id, v_numero, v_tipo, v_precio;
+        EXIT WHEN c_habitaciones_disponibles%NOTFOUND;
+        -- Procesar habitación disponible
+    END LOOP;
+    CLOSE c_habitaciones_disponibles;
+END;
+/
+
+-- 4. Cursor para empleados por hotel
+DECLARE
+    CURSOR c_empleados_hotel IS
+        SELECT empleado_id, nombre, puesto, salario
+        FROM Empleados
+        WHERE hotel_id = 101; -- Cambiar por el ID deseado
+BEGIN
+    OPEN c_empleados_hotel;
+    LOOP
+        FETCH c_empleados_hotel INTO v_empleado_id, v_nombre, v_puesto, v_salario;
+        EXIT WHEN c_empleados_hotel%NOTFOUND;
+        -- Procesar datos del empleado
+    END LOOP;
+    CLOSE c_empleados_hotel;
+END;
+/
+
+-- 5. Cursor para amenidades reservadas por cliente
+DECLARE
+    CURSOR c_amenidades_reservadas IS
+        SELECT a.nombre, ra.fecha
+        FROM Reservas_Amenidades ra
+        JOIN Amenidades a ON ra.amenidad_id = a.amenidad_id
+        WHERE ra.cliente_id = 202; -- Cambiar por el ID deseado
+BEGIN
+    OPEN c_amenidades_reservadas;
+    LOOP
+        FETCH c_amenidades_reservadas INTO v_nombre_amenidad, v_fecha_reserva;
+        EXIT WHEN c_amenidades_reservadas%NOTFOUND;
+        -- Procesar datos de la amenidad reservada
+    END LOOP;
+    CLOSE c_amenidades_reservadas;
+END;
+/
+
+-- 6. Cursor para ingresos totales por hotel
+DECLARE
+    CURSOR c_ingresos_hotel IS
+        SELECT h.nombre, SUM(f.monto_total) AS ingresos_totales
+        FROM Facturacion f
+        JOIN Hotel h ON f.hotel_id = h.hotel_id
+        GROUP BY h.nombre;
+BEGIN
+    OPEN c_ingresos_hotel;
+    LOOP
+        FETCH c_ingresos_hotel INTO v_hotel_nombre, v_ingresos_totales;
+        EXIT WHEN c_ingresos_hotel%NOTFOUND;
+        -- Procesar ingresos por hotel
+    END LOOP;
+    CLOSE c_ingresos_hotel;
+END;
+/
+
+-- 7. Cursor para opiniones de clientes
+DECLARE
+    CURSOR c_opiniones IS
+        SELECT c.nombre, o.comentario, o.calificacion
+        FROM Opiniones o
+        JOIN Cliente c ON o.cliente_id = c.cliente_id;
+BEGIN
+    OPEN c_opiniones;
+    LOOP
+        FETCH c_opiniones INTO v_cliente_nombre, v_comentario, v_calificacion;
+        EXIT WHEN c_opiniones%NOTFOUND;
+        -- Procesar opinión del cliente
+    END LOOP;
+    CLOSE c_opiniones;
+END;
+/
+
+-- 8. Cursor para facturas emitidas en el último mes
+DECLARE
+    CURSOR c_facturas_mes IS
+        SELECT factura_id, cliente_id, monto_total, fecha_emision
+        FROM Facturacion
+        WHERE fecha_emision >= ADD_MONTHS(SYSDATE, -1);
+BEGIN
+    OPEN c_facturas_mes;
+    LOOP
+        FETCH c_facturas_mes INTO v_factura_id, v_cliente_id, v_monto_total, v_fecha_emision;
+        EXIT WHEN c_facturas_mes%NOTFOUND;
+        -- Procesar factura del último mes
+    END LOOP;
+    CLOSE c_facturas_mes;
+END;
+/
+
+-- 9. Cursor para eventos por hotel
+DECLARE
+    CURSOR c_eventos_hotel IS
+        SELECT e.nombre, e.fecha_inicio, e.fecha_fin
+        FROM Eventos e
+        WHERE hotel_id = 101; -- Cambiar por el ID deseado
+BEGIN
+    OPEN c_eventos_hotel;
+    LOOP
+        FETCH c_eventos_hotel INTO v_nombre_evento, v_fecha_inicio, v_fecha_fin;
+        EXIT WHEN c_eventos_hotel%NOTFOUND;
+        -- Procesar datos del evento
+    END LOOP;
+    CLOSE c_eventos_hotel;
+END;
+/
+
+-- 10. Cursor para restaurantes únicos
+DECLARE
+    CURSOR c_restaurantes IS
+        SELECT restaurante_id, nombre, telefono
+        FROM Restaurante;
+BEGIN
+    OPEN c_restaurantes;
+    LOOP
+        FETCH c_restaurantes INTO v_restaurante_id, v_nombre, v_telefono;
+        EXIT WHEN c_restaurantes%NOTFOUND;
+        -- Procesar restaurante
+    END LOOP;
+    CLOSE c_restaurantes;
+END;
+/
+
+
+-- 11. Cursor para listar facturas de un cliente específico
+DECLARE
+    CURSOR c_facturas_cliente IS
+        SELECT factura_id, monto_total, fecha_emision
+        FROM Facturacion
+        WHERE cliente_id = 101; -- Cambiar por el ID del cliente deseado
+    v_factura_id Facturacion.factura_id%TYPE;
+    v_monto_total Facturacion.monto_total%TYPE;
+    v_fecha_emision Facturacion.fecha_emision%TYPE;
+BEGIN
+    OPEN c_facturas_cliente;
+    LOOP
+        FETCH c_facturas_cliente INTO v_factura_id, v_monto_total, v_fecha_emision;
+        EXIT WHEN c_facturas_cliente%NOTFOUND;
+        DBMS_OUTPUT.PUT_LINE('Factura ID: ' || v_factura_id || ' - Monto: ' || v_monto_total || ' - Fecha: ' || v_fecha_emision);
+    END LOOP;
+    CLOSE c_facturas_cliente;
+END;
+/
+
+-- 12. Cursor para listar reservas futuras
+DECLARE
+    CURSOR c_reservas_futuras IS
+        SELECT reservacion_id, fecha_inicio, fecha_fin, cliente_id
+        FROM Reservacion
+        WHERE fecha_inicio > SYSDATE;
+    v_reservacion_id Reservacion.reservacion_id%TYPE;
+    v_fecha_inicio Reservacion.fecha_inicio%TYPE;
+    v_fecha_fin Reservacion.fecha_fin%TYPE;
+    v_cliente_id Reservacion.cliente_id%TYPE;
+BEGIN
+    OPEN c_reservas_futuras;
+    LOOP
+        FETCH c_reservas_futuras INTO v_reservacion_id, v_fecha_inicio, v_fecha_fin, v_cliente_id;
+        EXIT WHEN c_reservas_futuras%NOTFOUND;
+        DBMS_OUTPUT.PUT_LINE('Reserva ID: ' || v_reservacion_id || ' - Cliente ID: ' || v_cliente_id || ' - Inicio: ' || v_fecha_inicio);
+    END LOOP;
+    CLOSE c_reservas_futuras;
+END;
+/
+
+-- 13. Cursor para listar habitaciones ocupadas
+DECLARE
+    CURSOR c_habitaciones_ocupadas IS
+        SELECT habitacion_id, numero, tipo, precio_por_noche
+        FROM Habitacion
+        WHERE estado = 'Ocupado';
+    v_habitacion_id Habitacion.habitacion_id%TYPE;
+    v_numero Habitacion.numero%TYPE;
+    v_tipo Habitacion.tipo%TYPE;
+    v_precio Habitacion.precio_por_noche%TYPE;
+BEGIN
+    OPEN c_habitaciones_ocupadas;
+    LOOP
+        FETCH c_habitaciones_ocupadas INTO v_habitacion_id, v_numero, v_tipo, v_precio;
+        EXIT WHEN c_habitaciones_ocupadas%NOTFOUND;
+        DBMS_OUTPUT.PUT_LINE('Habitación ID: ' || v_habitacion_id || ' - Número: ' || v_numero || ' - Tipo: ' || v_tipo);
+    END LOOP;
+    CLOSE c_habitaciones_ocupadas;
+END;
+/
+
+-- 14. Cursor para listar clientes que han dejado opiniones
+DECLARE
+    CURSOR c_clientes_opiniones IS
+        SELECT c.nombre, o.comentario, o.calificacion
+        FROM Cliente c
+        JOIN Opiniones o ON c.cliente_id = o.cliente_id;
+    v_nombre Cliente.nombre%TYPE;
+    v_comentario Opiniones.comentario%TYPE;
+    v_calificacion Opiniones.calificacion%TYPE;
+BEGIN
+    OPEN c_clientes_opiniones;
+    LOOP
+        FETCH c_clientes_opiniones INTO v_nombre, v_comentario, v_calificacion;
+        EXIT WHEN c_clientes_opiniones%NOTFOUND;
+        DBMS_OUTPUT.PUT_LINE('Cliente: ' || v_nombre || ' - Comentario: ' || v_comentario || ' - Calificación: ' || v_calificacion);
+    END LOOP;
+    CLOSE c_clientes_opiniones;
+END;
+/
+
+-- 15. Cursor para listar ingresos totales por cliente
+DECLARE
+    CURSOR c_ingresos_cliente IS
+        SELECT c.cliente_id, c.nombre, SUM(f.monto_total) AS total_gastado
+        FROM Cliente c
+        JOIN Facturacion f ON c.cliente_id = f.cliente_id
+        GROUP BY c.cliente_id, c.nombre;
+    v_cliente_id Cliente.cliente_id%TYPE;
+    v_nombre Cliente.nombre%TYPE;
+    v_total_gastado NUMBER;
+BEGIN
+    OPEN c_ingresos_cliente;
+    LOOP
+        FETCH c_ingresos_cliente INTO v_cliente_id, v_nombre, v_total_gastado;
+        EXIT WHEN c_ingresos_cliente%NOTFOUND;
+        DBMS_OUTPUT.PUT_LINE('Cliente ID: ' || v_cliente_id || ' - Nombre: ' || v_nombre || ' - Total Gastado: ' || v_total_gastado);
+    END LOOP;
+    CLOSE c_ingresos_cliente;
+END;
+/
+
