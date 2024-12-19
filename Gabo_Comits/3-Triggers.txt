@@ -1,0 +1,121 @@
+--1 Auditoría de cambios en la tabla Cliente
+CREATE SEQUENCE Auditoria_Cambios_seq
+START WITH 1 -- Primer valor que generará la secuencia
+INCREMENT BY 1 -- Incremento para cada siguiente valor
+NOCACHE; -- Opcional, evita almacenamiento en memoria
+/
+
+CREATE OR REPLACE TRIGGER trg_auditoria_cliente
+BEFORE INSERT OR UPDATE OR DELETE ON Cliente
+FOR EACH ROW
+BEGIN
+    -- Para INSERT
+    IF INSERTING THEN
+        INSERT INTO Auditoria_Cambios (
+            cambio_id, tabla_afectada, columna_afectada, id_registro, valor_anterior, valor_nuevo, fecha, usuario_id
+        ) VALUES (
+            Auditoria_Cambios_seq.NEXTVAL, -- Generar el ID automáticamente
+            'Cliente',
+            NULL, -- No aplica columna específica
+            :NEW.cliente_id,
+            NULL, -- No hay valor anterior
+            :NEW.nombre || ', ' || :NEW.correo || ', ' || :NEW.telefono,
+            SYSDATE,
+            NULL -- Opcional, asignar usuario si aplica
+        );
+    END IF;
+
+    -- Para UPDATE
+    IF UPDATING THEN
+        INSERT INTO Auditoria_Cambios (
+            cambio_id, tabla_afectada, columna_afectada, id_registro, valor_anterior, valor_nuevo, fecha, usuario_id
+        ) VALUES (
+            Auditoria_Cambios_seq.NEXTVAL,
+            'Cliente',
+            NULL,
+            :OLD.cliente_id,
+            :OLD.nombre || ', ' || :OLD.correo || ', ' || :OLD.telefono,
+            :NEW.nombre || ', ' || :NEW.correo || ', ' || :NEW.telefono,
+            SYSDATE,
+            NULL
+        );
+    END IF;
+
+    -- Para DELETE
+    IF DELETING THEN
+        INSERT INTO Auditoria_Cambios (
+            cambio_id, tabla_afectada, columna_afectada, id_registro, valor_anterior, valor_nuevo, fecha, usuario_id
+        ) VALUES (
+            Auditoria_Cambios_seq.NEXTVAL,
+            'Cliente',
+            NULL,
+            :OLD.cliente_id,
+            :OLD.nombre || ', ' || :OLD.correo || ', ' || :OLD.telefono,
+            NULL,
+            SYSDATE,
+            NULL
+        );
+    END IF;
+END;
+/
+
+--2 Actualización automática del estado de una habitación
+CREATE OR REPLACE TRIGGER trg_actualizar_habitacion_disponible
+AFTER DELETE ON Reservacion
+FOR EACH ROW
+BEGIN
+    UPDATE Habitacion
+    SET estado = 'Disponible'
+    WHERE habitacion_id = :OLD.habitacion_id;
+END;
+/
+
+--3 Prevención de eliminación de hoteles con habitaciones activas
+CREATE OR REPLACE TRIGGER trg_prevenir_eliminacion_hotel
+BEFORE DELETE ON Hotel
+FOR EACH ROW
+DECLARE
+    v_count NUMBER;
+BEGIN
+    SELECT COUNT(*)
+    INTO v_count
+    FROM Habitacion
+    WHERE hotel_id = :OLD.hotel_id;
+
+    IF v_count > 0 THEN
+        RAISE_APPLICATION_ERROR(-20001, 'No se puede eliminar un hotel con habitaciones activas.');
+    END IF;
+END;
+/
+
+--4 Registro de logs para reservas
+CREATE SEQUENCE Logs_seq
+START WITH 1
+INCREMENT BY 1
+NOCACHE;
+
+
+CREATE OR REPLACE TRIGGER trg_log_reservacion
+AFTER INSERT ON Reservacion
+FOR EACH ROW
+BEGIN
+    INSERT INTO Logs (log_id, operacion, detalle, fecha)
+    VALUES (
+        Logs_seq.NEXTVAL,
+        'INSERT',
+        'Se creó una nueva reservación con ID: ' || :NEW.reservacion_id,
+        SYSDATE
+    );
+END;
+/
+
+--5 Validación de calificación en opiniones
+CREATE OR REPLACE TRIGGER trg_validar_calificacion_opinion
+BEFORE INSERT OR UPDATE ON Opiniones
+FOR EACH ROW
+BEGIN
+    IF :NEW.calificacion NOT BETWEEN 1 AND 5 THEN
+        RAISE_APPLICATION_ERROR(-20002, 'La calificación debe estar entre 1 y 5.');
+    END IF;
+END;
+/

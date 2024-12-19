@@ -1,0 +1,235 @@
+-----------------------------------DROPS
+-- Tablas de auditoría
+DROP TABLE Auditoria_Accesos CASCADE CONSTRAINTS;
+DROP TABLE Auditoria_Errores CASCADE CONSTRAINTS;
+DROP TABLE Auditoria_Cambios CASCADE CONSTRAINTS;
+DROP TABLE Auditoria_Acciones CASCADE CONSTRAINTS;
+
+-- Tablas de eventos
+DROP TABLE Participantes_Eventos CASCADE CONSTRAINTS;
+DROP TABLE Eventos CASCADE CONSTRAINTS;
+
+-- Tablas de empleados
+DROP TABLE Empleados CASCADE CONSTRAINTS;
+
+-- Tablas principales
+DROP TABLE Facturacion CASCADE CONSTRAINTS;
+DROP TABLE Check_Out CASCADE CONSTRAINTS;
+DROP TABLE Check_In CASCADE CONSTRAINTS;
+DROP TABLE Reservacion CASCADE CONSTRAINTS;
+DROP TABLE Reservas_Amenidades CASCADE CONSTRAINTS;
+DROP TABLE Amenidades CASCADE CONSTRAINTS;
+DROP TABLE Reservas_Restaurante CASCADE CONSTRAINTS;
+DROP TABLE Restaurante CASCADE CONSTRAINTS;
+DROP TABLE Pedido_Hotel CASCADE CONSTRAINTS;
+DROP TABLE Opiniones CASCADE CONSTRAINTS;
+DROP TABLE Habitacion CASCADE CONSTRAINTS;
+
+-- Tablas base
+DROP TABLE Cliente CASCADE CONSTRAINTS;
+DROP TABLE Hotel CASCADE CONSTRAINTS;
+--------------------------------------------Creacion
+
+-- Tabla Hotel
+CREATE TABLE Hotel (
+    hotel_id NUMBER PRIMARY KEY,
+    nombre VARCHAR2(100) UNIQUE NOT NULL,
+    direccion VARCHAR2(200) NOT NULL,
+    telefono VARCHAR2(20) NOT NULL,
+    correo VARCHAR2(100) UNIQUE
+);
+
+-- Tabla Cliente
+CREATE TABLE Cliente (
+    cliente_id NUMBER PRIMARY KEY,
+    nombre VARCHAR2(100) NOT NULL,
+    telefono VARCHAR2(20),
+    correo VARCHAR2(100) UNIQUE NOT NULL,
+    fecha_registro DATE DEFAULT SYSDATE
+);
+
+-- Tabla Habitacion
+CREATE TABLE Habitacion (
+    habitacion_id NUMBER PRIMARY KEY,
+    hotel_id NUMBER NOT NULL,
+    numero VARCHAR2(10) NOT NULL,
+    tipo VARCHAR2(50) NOT NULL,
+    precio_por_noche NUMBER(10, 2) NOT NULL,
+    estado VARCHAR2(20) DEFAULT 'Disponible',
+    CONSTRAINT fk_habitacion_hotel FOREIGN KEY (hotel_id) REFERENCES Hotel(hotel_id)
+);
+
+-- Tabla Opiniones
+CREATE TABLE Opiniones (
+    opinion_id NUMBER PRIMARY KEY,
+    cliente_id NUMBER NOT NULL,
+    hotel_id NUMBER NOT NULL,
+    comentario VARCHAR2(255),
+    calificacion NUMBER(1) CHECK (calificacion BETWEEN 1 AND 5),
+    CONSTRAINT fk_opiniones_cliente FOREIGN KEY (cliente_id) REFERENCES Cliente(cliente_id),
+    CONSTRAINT fk_opiniones_hotel FOREIGN KEY (hotel_id) REFERENCES Hotel(hotel_id)
+);
+
+-- Tabla Pedido_Hotel
+CREATE TABLE Pedido_Hotel (
+    pedido_id NUMBER PRIMARY KEY,
+    hotel_id NUMBER NOT NULL,
+    descripcion VARCHAR2(255) NOT NULL,
+    fecha DATE DEFAULT SYSDATE,
+    CONSTRAINT fk_pedido_hotel FOREIGN KEY (hotel_id) REFERENCES Hotel(hotel_id)
+);
+
+-- Tabla Restaurante
+CREATE TABLE Restaurante (
+    restaurante_id NUMBER PRIMARY KEY,
+    nombre VARCHAR2(100) NOT NULL,
+    direccion VARCHAR2(200) NOT NULL,
+    telefono VARCHAR2(20) NOT NULL
+);
+
+-- Tabla Reservas_Restaurante
+CREATE TABLE Reservas_Restaurante (
+    reserva_restaurante_id NUMBER PRIMARY KEY,
+    restaurante_id NUMBER NOT NULL,
+    cliente_id NUMBER NOT NULL,
+    fecha DATE NOT NULL,
+    CONSTRAINT fk_reserva_restaurante FOREIGN KEY (restaurante_id) REFERENCES Restaurante(restaurante_id),
+    CONSTRAINT fk_reserva_cliente FOREIGN KEY (cliente_id) REFERENCES Cliente(cliente_id)
+);
+
+-- Tabla Amenidades
+CREATE TABLE Amenidades (
+    amenidad_id NUMBER PRIMARY KEY,
+    nombre VARCHAR2(100) UNIQUE NOT NULL,
+    descripcion VARCHAR2(255)
+);
+
+-- Tabla Reservas_Amenidades
+CREATE TABLE Reservas_Amenidades (
+    reserva_amenidad_id NUMBER PRIMARY KEY,
+    amenidad_id NUMBER NOT NULL,
+    cliente_id NUMBER NOT NULL,
+    fecha DATE NOT NULL,
+    CONSTRAINT fk_reserva_amenidad FOREIGN KEY (amenidad_id) REFERENCES Amenidades(amenidad_id),
+    CONSTRAINT fk_reserva_amenidad_cliente FOREIGN KEY (cliente_id) REFERENCES Cliente(cliente_id)
+);
+
+-- Tabla Reservacion
+CREATE TABLE Reservacion (
+    reservacion_id NUMBER PRIMARY KEY,
+    hotel_id NUMBER NOT NULL,
+    habitacion_id NUMBER NOT NULL,
+    cliente_id NUMBER NOT NULL,
+    fecha_inicio DATE NOT NULL,
+    fecha_fin DATE NOT NULL,
+    CONSTRAINT fk_reservacion_hotel FOREIGN KEY (hotel_id) REFERENCES Hotel(hotel_id),
+    CONSTRAINT fk_reservacion_habitacion FOREIGN KEY (habitacion_id) REFERENCES Habitacion(habitacion_id),
+    CONSTRAINT fk_reservacion_cliente FOREIGN KEY (cliente_id) REFERENCES Cliente(cliente_id)
+);
+
+-- Tabla Check_In
+CREATE TABLE Check_In (
+    check_in_id NUMBER PRIMARY KEY,
+    reservacion_id NUMBER NOT NULL,
+    fecha DATE DEFAULT SYSDATE,
+    CONSTRAINT fk_checkin_reservacion FOREIGN KEY (reservacion_id) REFERENCES Reservacion(reservacion_id)
+);
+
+-- Tabla Check_Out
+CREATE TABLE Check_Out (
+    check_out_id NUMBER PRIMARY KEY,
+    reservacion_id NUMBER NOT NULL,
+    fecha DATE DEFAULT SYSDATE,
+    CONSTRAINT fk_checkout_reservacion FOREIGN KEY (reservacion_id) REFERENCES Reservacion(reservacion_id)
+);
+
+-- Tabla Facturacion
+CREATE TABLE Facturacion (
+    factura_id NUMBER PRIMARY KEY,
+    cliente_id NUMBER NOT NULL,
+    hotel_id NUMBER NOT NULL,
+    monto_total NUMBER(10, 2) NOT NULL,
+    fecha_emision DATE DEFAULT SYSDATE,
+    CONSTRAINT fk_facturacion_cliente FOREIGN KEY (cliente_id) REFERENCES Cliente(cliente_id),
+    CONSTRAINT fk_facturacion_hotel FOREIGN KEY (hotel_id) REFERENCES Hotel(hotel_id)
+);
+
+CREATE TABLE Empleados (
+    empleado_id NUMBER PRIMARY KEY,
+    hotel_id NUMBER NOT NULL,
+    nombre VARCHAR2(100) NOT NULL,
+    puesto VARCHAR2(50) NOT NULL, -- Ejemplo: "Recepcionista", "Limpieza"
+    fecha_contratacion DATE NOT NULL,
+    salario NUMBER(10, 2),
+    CONSTRAINT fk_empleado_hotel FOREIGN KEY (hotel_id) REFERENCES Hotel(hotel_id)
+);
+
+CREATE TABLE Eventos (
+    evento_id NUMBER PRIMARY KEY,
+    hotel_id NUMBER NOT NULL,
+    nombre VARCHAR2(100) NOT NULL,
+    descripcion VARCHAR2(255),
+    fecha_inicio DATE NOT NULL,
+    fecha_fin DATE NOT NULL,
+    capacidad NUMBER NOT NULL,
+    CONSTRAINT fk_evento_hotel FOREIGN KEY (hotel_id) REFERENCES Hotel(hotel_id)
+);
+
+
+CREATE TABLE Participantes_Eventos (
+    participante_id NUMBER PRIMARY KEY,
+    evento_id NUMBER NOT NULL,
+    cliente_id NUMBER NOT NULL,
+    CONSTRAINT fk_participante_evento FOREIGN KEY (evento_id) REFERENCES Eventos(evento_id),
+    CONSTRAINT fk_participante_cliente FOREIGN KEY (cliente_id) REFERENCES Cliente(cliente_id)
+);
+
+CREATE TABLE Auditoria_Acciones (
+    auditoria_id NUMBER PRIMARY KEY,
+    usuario_id NUMBER, -- ID del usuario que realizó la acción
+    tabla_afectada VARCHAR2(100) NOT NULL, -- Nombre de la tabla afectada
+    accion VARCHAR2(50) NOT NULL, -- Ejemplo: "INSERT", "UPDATE", "DELETE"
+    fecha DATE DEFAULT SYSDATE, -- Fecha y hora del evento
+    detalle_accion VARCHAR2(4000), -- Detalle o descripción de la acción
+    CONSTRAINT fk_auditoria_usuario FOREIGN KEY (usuario_id) REFERENCES Cliente(cliente_id)
+);
+
+--------------------------------------------Auditorias
+
+CREATE TABLE Auditoria_Cambios (
+    cambio_id NUMBER PRIMARY KEY,
+    tabla_afectada VARCHAR2(100) NOT NULL, -- Nombre de la tabla afectada
+    columna_afectada VARCHAR2(100), -- Nombre de la columna afectada
+    id_registro NUMBER NOT NULL, -- Identificador del registro afectado
+    valor_anterior VARCHAR2(4000), -- Valor antes del cambio
+    valor_nuevo VARCHAR2(4000), -- Valor después del cambio
+    fecha DATE DEFAULT SYSDATE, -- Fecha y hora del cambio
+    usuario_id NUMBER, -- Usuario que realizó el cambio
+    CONSTRAINT fk_cambio_usuario FOREIGN KEY (usuario_id) REFERENCES Cliente(cliente_id)
+);
+
+CREATE TABLE Auditoria_Errores (
+    error_id NUMBER PRIMARY KEY,
+    fecha DATE DEFAULT SYSDATE, -- Fecha y hora del error
+    usuario_id NUMBER, -- Usuario afectado o responsable (puede ser NULL)
+    mensaje_error VARCHAR2(4000) NOT NULL, -- Descripción del error
+    nivel_error VARCHAR2(50) NOT NULL, -- Ejemplo: "INFO", "WARN", "ERROR", "CRITICAL"
+    contexto VARCHAR2(4000) -- Información adicional sobre el contexto del error
+);
+
+CREATE TABLE Auditoria_Accesos (
+    acceso_id NUMBER PRIMARY KEY,
+    usuario_id NUMBER, -- Usuario que intentó acceder
+    fecha DATE DEFAULT SYSDATE, -- Fecha y hora del intento de acceso
+    ip_origen VARCHAR2(100), -- Dirección IP de origen
+    estado VARCHAR2(50) NOT NULL, -- Ejemplo: "Exitoso", "Fallido"
+    detalle VARCHAR2(4000), -- Detalle adicional (como motivos de fallo)
+    CONSTRAINT fk_acceso_usuario FOREIGN KEY (usuario_id) REFERENCES Cliente(cliente_id)
+);
+
+CREATE TABLE Logs (
+    log_id NUMBER PRIMARY KEY,
+    operacion VARCHAR2(100),
+    detalle VARCHAR2(4000),
+    fecha DATE DEFAULT SYSDATE
+);

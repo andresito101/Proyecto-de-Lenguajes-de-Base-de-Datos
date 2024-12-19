@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Subscription Payment</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #f8f9fa;
+      font-family: 'Arial', sans-serif;
+    }
+
+    .subscription-container {
+      max-width: 600px;
+      margin: 50px auto;
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+    }
+
+    .subscription-header img {
+      border-radius: 10px;
+      width: 100%;
+    }
+
+    .price-option {
+      border: 2px solid #ddd;
+      border-radius: 10px;
+      padding: 10px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .price-option.active {
+      border-color: #4a90e2;
+      background-color: #eef6fd;
+    }
+
+    .price-option .badge {
+      font-size: 0.8rem;
+      background-color: #28a745;
+    }
+
+    .form-control {
+      border-radius: 8px;
+    }
+
+    .secure-text {
+      font-size: 0.9rem;
+      color: #6c757d;
+    }
+
+    .final-price {
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+
+    .btn-primary {
+      background-color: #4a90e2;
+      border: none;
+      padding: 10px 20px;
+      font-size: 1rem;
+      border-radius: 8px;
+    }
+
+    .btn-primary:hover {
+      background-color: #357ab8;
+    }
+  </style>
+</head>
+<body>
+  <div class="container subscription-container">
+    <!-- Header Section -->
+    <div class="subscription-header mb-4">
+      <img src="https://source.unsplash.com/600x200/?abstract,art" alt="Header Image">
+    </div>
+
+    <!-- Pricing Options -->
+    <div class="d-flex justify-content-between mb-4">
+      <div class="price-option active" id="monthly-option">
+        <h6>Pay Monthly</h6>
+        <p class="mb-0">$399/month</p>
+      </div>
+      <div class="price-option" id="yearly-option">
+        <h6>Pay Yearly</h6>
+        <p class="mb-1">$349/month</p>
+        <span class="badge text-white">Save 20%</span>
+      </div>
+    </div>
+
+    <!-- Form Section -->
+    <form>
+      <div class="mb-3">
+        <label for="email" class="form-label">Billing Email</label>
+        <input type="email" class="form-control" id="email" placeholder="Email address">
+      </div>
+      <div class="mb-3">
+        <label for="card-details" class="form-label">Card Details</label>
+        <div class="d-flex gap-2">
+          <input type="text" class="form-control" id="card-number" placeholder="Card number">
+          <input type="text" class="form-control" placeholder="MM / YY">
+          <input type="text" class="form-control" placeholder="CVC">
+        </div>
+      </div>
+      <div class="mb-3">
+        <label for="check-in" class="form-label">Check-in Date</label>
+        <input type="date" class="form-control" id="check-in">
+      </div>
+      <div class="mb-3">
+        <label for="check-out" class="form-label">Check-out Date</label>
+        <input type="date" class="form-control" id="check-out">
+      </div>
+      <p class="secure-text text-center">🔒 Secured form with UIB Banking</p>
+    </form>
+
+    <!-- Price Summary -->
+    <div class="text-center mt-4">
+      <p class="final-price">Billed now: $399</p>
+      <a href="#" class="text-primary">Apply promo code</a>
+    </div>
+
+    <!-- Confirmation Button -->
+    <div class="text-center mt-4">
+      <button class="btn btn-primary w-100">Start Brainwave Enterprise Plan</button>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // JavaScript to handle price option selection
+    document.querySelectorAll('.price-option').forEach(option => {
+      option.addEventListener('click', function() {
+        document.querySelectorAll('.price-option').forEach(opt => opt.classList.remove('active'));
+        this.classList.add('active');
+      });
+    });
+  </script>
+</body>
+</html>

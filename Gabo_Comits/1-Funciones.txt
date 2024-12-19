@@ -1,0 +1,377 @@
+--Crear 1 por 1 para evitar problemas de compilación 
+
+--Validar cliente
+CREATE OR REPLACE FUNCTION cliente_existe(p_cliente_id NUMBER)
+RETURN BOOLEAN IS
+    v_count NUMBER;
+BEGIN
+    SELECT COUNT(*)
+    INTO v_count
+    FROM Cliente
+    WHERE cliente_id = p_cliente_id;
+
+    RETURN v_count > 0;
+END;
+/
+
+--Validar hotel
+CREATE OR REPLACE FUNCTION hotel_existe(p_hotel_id NUMBER)
+RETURN BOOLEAN IS
+    v_count NUMBER;
+BEGIN
+    SELECT COUNT(*)
+    INTO v_count
+    FROM Hotel
+    WHERE hotel_id = p_hotel_id;
+
+    RETURN v_count > 0;
+END;
+/
+
+--Validar hotel nombre
+CREATE OR REPLACE FUNCTION nombre_hotel_es_unico(p_nombre VARCHAR2)
+RETURN BOOLEAN IS
+    v_count NUMBER;
+BEGIN
+    SELECT COUNT(*)
+    INTO v_count
+    FROM Hotel
+    WHERE nombre = p_nombre;
+
+    RETURN v_count = 0; -- Retorna TRUE si el nombre es único
+END;
+/
+
+--Validar hotel correo
+CREATE OR REPLACE FUNCTION correo_hotel_es_unico(p_correo VARCHAR2)
+RETURN BOOLEAN IS
+    v_count NUMBER;
+BEGIN
+    SELECT COUNT(*)
+    INTO v_count
+    FROM Hotel
+    WHERE correo = p_correo;
+
+    RETURN v_count = 0; -- Retorna TRUE si el correo es único
+END;
+/
+
+--Validar habitacion
+CREATE OR REPLACE FUNCTION habitacion_existe(p_habitacion_id NUMBER)
+RETURN BOOLEAN IS
+    v_count NUMBER;
+BEGIN
+    SELECT COUNT(*)
+    INTO v_count
+    FROM Habitacion
+    WHERE habitacion_id = p_habitacion_id;
+
+    RETURN v_count > 0; -- Retorna TRUE si la habitación existe
+END;
+/
+
+--Validar numero único habitación
+CREATE OR REPLACE FUNCTION numero_habitacion_es_unico(p_hotel_id NUMBER, p_numero VARCHAR2)
+RETURN BOOLEAN IS
+    v_count NUMBER;
+BEGIN
+    SELECT COUNT(*)
+    INTO v_count
+    FROM Habitacion
+    WHERE hotel_id = p_hotel_id AND numero = p_numero;
+
+    RETURN v_count = 0; -- Retorna TRUE si el número es único
+END;
+/
+
+
+--Validar Calificacion
+CREATE OR REPLACE FUNCTION calificacion_valida(p_calificacion NUMBER)
+RETURN BOOLEAN IS
+BEGIN
+    RETURN p_calificacion BETWEEN 1 AND 5;
+END;
+/
+
+----Validar si un correo es único
+CREATE OR REPLACE FUNCTION correo_es_unico(p_correo VARCHAR2, p_cliente_id NUMBER DEFAULT NULL)
+RETURN BOOLEAN IS
+    v_count NUMBER;
+BEGIN
+    SELECT COUNT(*)
+    INTO v_count
+    FROM Cliente
+    WHERE correo = p_correo
+      AND (p_cliente_id IS NULL OR cliente_id != p_cliente_id);
+
+    RETURN v_count = 0;
+END;
+/
+
+----Validar reservación existe
+CREATE OR REPLACE FUNCTION reservacion_existe(p_reservacion_id NUMBER)
+RETURN BOOLEAN IS
+    v_count NUMBER;
+BEGIN
+    SELECT COUNT(*)
+    INTO v_count
+    FROM Reservacion
+    WHERE reservacion_id = p_reservacion_id;
+
+    RETURN v_count > 0;
+END;
+/
+
+-- Validar si una habitación está disponible
+CREATE OR REPLACE FUNCTION habitacion_esta_disponible(p_habitacion_id NUMBER, p_fecha_inicio DATE, p_fecha_fin DATE)
+RETURN BOOLEAN IS
+    v_count NUMBER;
+BEGIN
+    SELECT COUNT(*)
+    INTO v_count
+    FROM Reservacion
+    WHERE habitacion_id = p_habitacion_id
+      AND (fecha_inicio <= p_fecha_fin AND fecha_fin >= p_fecha_inicio);
+
+    RETURN v_count = 0; -- Disponible si no hay conflictos
+END;
+/
+
+-- Validar si una amenidad es unica
+
+CREATE OR REPLACE FUNCTION amenidad_es_unica(p_nombre VARCHAR2)
+RETURN BOOLEAN IS
+    v_count NUMBER;
+BEGIN
+    SELECT COUNT(*)
+    INTO v_count
+    FROM Amenidades
+    WHERE nombre = p_nombre;
+
+    RETURN v_count = 0; -- Retorna TRUE si el nombre es único
+END;
+/
+
+-- Validar si una amenidad existe
+
+CREATE OR REPLACE FUNCTION amenidad_existe(p_amenidad_id NUMBER)
+RETURN BOOLEAN IS
+    v_count NUMBER;
+BEGIN
+    SELECT COUNT(*)
+    INTO v_count
+    FROM Amenidades
+    WHERE amenidad_id = p_amenidad_id;
+
+    RETURN v_count > 0; -- Retorna TRUE si la amenidad existe
+END;
+/
+
+-- Validar si una amenidad reserva es unica
+
+CREATE OR REPLACE FUNCTION reserva_amenidad_es_unica(
+    p_cliente_id NUMBER,
+    p_amenidad_id NUMBER,
+    p_fecha DATE
+) RETURN BOOLEAN IS
+    v_count NUMBER;
+BEGIN
+    SELECT COUNT(*)
+    INTO v_count
+    FROM Reservas_Amenidades
+    WHERE cliente_id = p_cliente_id
+      AND amenidad_id = p_amenidad_id
+      AND fecha = p_fecha;
+
+    RETURN v_count = 0; -- Retorna TRUE si no hay duplicados
+END;
+/
+
+
+--Calcular la duración de una reservación
+CREATE OR REPLACE FUNCTION calcular_duracion_reserva(fecha_inicio DATE, fecha_fin DATE)
+RETURN NUMBER IS
+BEGIN
+    RETURN fecha_fin - fecha_inicio;
+END;
+
+
+-- Obtener el total a pagar por una reservación
+CREATE OR REPLACE FUNCTION total_a_pagar(habitacion_id NUMBER, dias NUMBER)
+RETURN NUMBER IS
+    precio NUMBER;
+BEGIN
+    SELECT precio_por_noche INTO precio FROM Habitacion WHERE habitacion_id = habitacion_id;
+    RETURN precio * dias;
+END;
+
+
+--Validar disponibilidad de habitación
+CREATE OR REPLACE FUNCTION habitacion_disponible(habitacion_id NUMBER, fecha_inicio DATE, fecha_fin DATE)
+RETURN VARCHAR2 IS
+    reservada NUMBER;
+BEGIN
+    SELECT COUNT(*) INTO reservada
+    FROM Reservacion
+    WHERE habitacion_id = habitacion_id
+      AND (fecha_inicio <= fecha_fin AND fecha_fin >= fecha_inicio);
+    IF reservada > 0 THEN
+        RETURN 'No Disponible';
+    ELSE
+        RETURN 'Disponible';
+    END IF;
+END;
+
+
+--Obtener el nombre de un cliente
+CREATE OR REPLACE FUNCTION obtener_nombre_cliente(cliente_id NUMBER)
+RETURN VARCHAR2 IS
+    nombre_cliente VARCHAR2(100);
+BEGIN
+    SELECT nombre INTO nombre_cliente FROM Cliente WHERE cliente_id = cliente_id;
+    RETURN nombre_cliente;
+END;
+
+--Calcular la calificación promedio de un hotel
+CREATE OR REPLACE FUNCTION calificacion_promedio_hotel(hotel_id NUMBER)
+RETURN NUMBER IS
+    promedio NUMBER;
+BEGIN
+    SELECT AVG(calificacion) INTO promedio FROM Opiniones WHERE hotel_id = hotel_id;
+    RETURN NVL(promedio, 0);
+END;
+
+
+--Obtener las habitaciones disponibles en un hotel
+CREATE OR REPLACE FUNCTION habitaciones_disponibles_hotel(hotel_id NUMBER)
+RETURN NUMBER IS
+    disponibles NUMBER;
+BEGIN
+    SELECT COUNT(*) INTO disponibles FROM Habitacion WHERE hotel_id = hotel_id AND estado = 'Disponible';
+    RETURN disponibles;
+END;
+
+
+--Verificar si un cliente tiene reservas activas
+CREATE OR REPLACE FUNCTION cliente_con_reserva_activa(cliente_id NUMBER)
+RETURN VARCHAR2 IS
+    reservas NUMBER;
+BEGIN
+    SELECT COUNT(*) INTO reservas
+    FROM Reservacion
+    WHERE cliente_id = cliente_id AND SYSDATE BETWEEN fecha_inicio AND fecha_fin;
+    IF reservas > 0 THEN
+        RETURN 'Sí';
+    ELSE
+        RETURN 'No';
+    END IF;
+END;
+
+
+--Validar el correo de un cliente
+CREATE OR REPLACE FUNCTION correo_registrado(correo VARCHAR2)
+RETURN VARCHAR2 IS
+    existe NUMBER;
+BEGIN
+    SELECT COUNT(*) INTO existe FROM Cliente WHERE correo = correo;
+    IF existe > 0 THEN
+        RETURN 'Registrado';
+    ELSE
+        RETURN 'No Registrado';
+    END IF;
+END;
+
+
+--Calcular el ingreso total de un hotel
+CREATE OR REPLACE FUNCTION ingreso_total_hotel(hotel_id NUMBER)
+RETURN NUMBER IS
+    total_ingreso NUMBER;
+BEGIN
+    SELECT SUM(monto_total) INTO total_ingreso FROM Facturacion WHERE hotel_id = hotel_id;
+    RETURN NVL(total_ingreso, 0);
+END;
+
+
+--Contar reservas en un hotel
+CREATE OR REPLACE FUNCTION contar_reservas_hotel(hotel_id NUMBER)
+RETURN NUMBER IS
+    total_reservas NUMBER;
+BEGIN
+    SELECT COUNT(*) INTO total_reservas FROM Reservacion WHERE hotel_id = hotel_id;
+    RETURN total_reservas;
+END;
+
+
+--Obtener el hotel con más reservas
+CREATE OR REPLACE FUNCTION hotel_con_mas_reservas
+RETURN VARCHAR2 IS
+    hotel_nombre VARCHAR2(100);
+BEGIN
+    SELECT nombre INTO hotel_nombre
+    FROM Hotel h
+    WHERE h.hotel_id = (SELECT hotel_id FROM (SELECT hotel_id, COUNT(*) AS total FROM Reservacion GROUP BY hotel_id ORDER BY total DESC) WHERE ROWNUM = 1);
+    RETURN hotel_nombre;
+END;
+
+
+--Contar clientes registrados
+CREATE OR REPLACE FUNCTION total_clientes_registrados
+RETURN NUMBER IS
+    total NUMBER;
+BEGIN
+    SELECT COUNT(*) INTO total FROM Cliente;
+    RETURN total;
+END;
+
+
+--Obtener la habitación más cara de un hotel
+CREATE OR REPLACE FUNCTION habitacion_mas_cara_hotel(hotel_id NUMBER)
+RETURN NUMBER IS
+    precio_max NUMBER;
+BEGIN
+    SELECT MAX(precio_por_noche) INTO precio_max FROM Habitacion WHERE hotel_id = hotel_id;
+    RETURN NVL(precio_max, 0);
+END;
+
+
+--Obtener el porcentaje de ocupación de un hotel
+CREATE OR REPLACE FUNCTION porcentaje_ocupacion_hotel(hotel_id NUMBER)
+RETURN NUMBER IS
+    ocupadas NUMBER;
+    total NUMBER;
+BEGIN
+    SELECT COUNT(*) INTO ocupadas FROM Habitacion WHERE hotel_id = hotel_id AND estado = 'Ocupado';
+    SELECT COUNT(*) INTO total FROM Habitacion WHERE hotel_id = hotel_id;
+    RETURN NVL((ocupadas / total) * 100, 0);
+END;
+
+
+--Obtener la próxima reservación de un cliente
+CREATE OR REPLACE FUNCTION proxima_reservacion_cliente(cliente_id NUMBER)
+RETURN DATE IS
+    fecha_proxima DATE;
+BEGIN
+    SELECT MIN(fecha_inicio) INTO fecha_proxima
+    FROM Reservacion
+    WHERE cliente_id = cliente_id AND fecha_inicio > SYSDATE;
+    RETURN fecha_proxima;
+END;
+
+------------------------------------Eliminar funciones
+
+DROP FUNCTION calcular_duracion_reserva;
+DROP FUNCTION total_a_pagar;
+DROP FUNCTION habitacion_disponible;
+DROP FUNCTION obtener_nombre_cliente;
+DROP FUNCTION calificacion_promedio_hotel;
+DROP FUNCTION habitaciones_disponibles_hotel;
+DROP FUNCTION cliente_con_reserva_activa;
+DROP FUNCTION correo_registrado;
+DROP FUNCTION ingreso_total_hotel;
+DROP FUNCTION contar_reservas_hotel;
+DROP FUNCTION hotel_con_mas_reservas;
+DROP FUNCTION total_clientes_registrados;
+DROP FUNCTION habitacion_mas_cara_hotel;
+DROP FUNCTION porcentaje_ocupacion_hotel;
+DROP FUNCTION proxima_reservacion_cliente;
+
